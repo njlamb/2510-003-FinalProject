@@ -1,0 +1,48 @@
+---
+  - name: Test Web Servers
+    hosts: test_webservers
+    tasks:
+      - name: Install Apache
+        apt:
+          name: apache2
+          state: latest
+
+      - name: Install Node.js
+        apt:
+          name: nodejs
+          state: latest
+
+      - name: Install Git
+        apt:
+          name: git
+          state: latest
+
+      - name: Remove Existing Directory
+        command: rm -rf /var/www/html
+
+      - name: Create Directory
+        command: mkdir /var/www/html
+
+      - name: Copy env_script.sh to Server
+        copy:
+          src: /home/njlamb42/shellscript_files/env_script.sh
+          dest: /var/www/html/clonescript.sh
+          mode: '0755'
+          owner: root
+          group: root
+
+      - name: Change Directory to html
+        command: ./clonescript.sh
+        args:
+          chdir: /var/www/html
+        become: yes
+        become_user: root
+
+
+  - name: Test Database Servers
+    hosts: test_databaseservers
+    tasks:
+      - name: Install MariaDB
+        apt:
+          name: mariadb-server
+          state: latest
